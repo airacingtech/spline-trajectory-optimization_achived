@@ -39,14 +39,16 @@ class Trajectory:
     BANK = 13
     LON_ACC = 14
     LAT_ACC = 15
-    TIME = 16
-    IDX = 17
-    ITERATION_FLAG = 18
+    YAW_RATE = 16
+    VY = 17
+    TIME = 18
+    IDX = 19
+    ITERATION_FLAG = 20
 
     def __init__(self, num_point: int, ttl_num: int = 0, origin=None) -> None:
         self.ttl_num = ttl_num
         self.origin = origin
-        self.points = np.zeros((num_point, 19), dtype=np.float64)
+        self.points = np.zeros((num_point, 21), dtype=np.float64)
         self.points[:, Trajectory.IDX] = np.arange(0, len(self.points), 1)
         self.points[:, Trajectory.ITERATION_FLAG] = -1
 
@@ -356,9 +358,9 @@ def save_ttl(ttl_path: str, trajectory: Trajectory):
                 str(row[Trajectory.RIGHT_BOUND_X]),
                 str(row[Trajectory.RIGHT_BOUND_Y]),
                 str(row[Trajectory.BANK]),
-                str(row[Trajectory.LON_ACC]),
-                str(row[Trajectory.LAT_ACC]),
-                str(row[Trajectory.TIME]),
+                # str(row[Trajectory.LON_ACC]),
+                # str(row[Trajectory.LAT_ACC]),
+                # str(row[Trajectory.TIME]),
             ]
             f.writelines([','.join(vals) + '\n'])
         np.apply_along_axis(save_row, 1, trajectory.points)

@@ -49,11 +49,11 @@ def main():
                         estimates["max_speed_mps"],
                         estimates["max_jerk_mpsc"])
         v = Vehicle(vp)
-        traj_d[:, Trajectory.SPEED] = 45
-        traj_d[:, Trajectory.TIME] = .01
-
-        # result = sim.run_simulation(traj_d, False)
-        # traj_d = result.trajectory
+        sim = Simulator(v)
+        result = sim.run_simulation(traj_d, False)
+        traj_d = result.trajectory
+        # traj_d[:, Trajectory.SPEED] = 5.0
+        # traj_d[:, Trajectory.TIME] = 0.1
     else:
         params["x0"] = ca.DM.from_file(params["x0"], "txt")
         params["u0"] = ca.DM.from_file(params["u0"], "txt")
@@ -77,14 +77,18 @@ def main():
 
     print(f"[Optimal lap time: {ca.sum1(t) * scale_t}]")
 
-    ca.DM(traj_d.points[:, :Trajectory.TIME+1]).to_file("ttl_input.txt", "txt")
+    ca.DM(traj_d.points[:, :Trajectory.BANK+1]).to_file("ttl_input.txt", "txt")
 
     opt_traj_d = traj_d.copy()
     global_pose = race_track.frenet_to_global(x[:, 0].T, x[:, 1].T, x[:, 2].T)
     opt_traj_d[:, 0:2] = global_pose[:, 0:2]
-    opt_traj_d[:, Trajectory.YAW] = global_pose[:, 2].full().squeeze()
-    opt_traj_d[:, Trajectory.SPEED] = x[:, 5]
+    opt_traj_d[:, Trajectory.YAW] = np.arctan2(
+        np.diff(global_pose[:, 1], prepend=global_pose[-1, 1], axis=0), np.diff(global_pose[:, 0], prepend=global_pose[-1, 0], axis=0)).squeeze()
+    opt_traj_d[:, Trajectory.SPEED] = x[:, 5] * np.cos(x[:, 4])
+    opt_traj_d[:, Trajectory.YAW_RATE] = x[:, 3]
+    opt_traj_d[:, Trajectory.VY] = x[:, 5] * np.sin(x[:, 4])
     race_track.fill_trajectory_boundaries(opt_traj_d)
+    opt_traj_d[:, Trajectory.YAW] = global_pose[:, 2].full().squeeze()
     opt_traj_d.fill_distance()
     save_ttl(params["output"], opt_traj_d)
     ca.DM(x).to_file("x_optm.txt", "txt")
@@ -93,12 +97,14 @@ def main():
     ca.DM(opt_traj_d.points[:, :Trajectory.TIME+1]).to_file("ttl_optm.txt", "txt")
 
     plt.figure()
-    plt.plot(opt_traj_d[:, 0], opt_traj_d[:, 1], "-o")
-    plt.plot(traj_d[:, Trajectory.LEFT_BOUND_X],
-             traj_d[:, Trajectory.LEFT_BOUND_Y])
-    plt.plot(traj_d[:, Trajectory.RIGHT_BOUND_X],
-             traj_d[:, Trajectory.RIGHT_BOUND_Y])
+    plt.plot(traj_d[:, 0], traj_d[:, 1], label="Original", linewidth=4.0)
+    plt.plot(opt_traj_d[:, 0], opt_traj_d[:, 1], linewidth=4.0, label="Optimal")
+    plt.plot(opt_traj_d[:, Trajectory.LEFT_BOUND_X],
+             opt_traj_d[:, Trajectory.LEFT_BOUND_Y], color="gray", linewidth=4.0)
+    plt.plot(opt_traj_d[:, Trajectory.RIGHT_BOUND_X],
+             opt_traj_d[:, Trajectory.RIGHT_BOUND_Y],  color="gray", linewidth=4.0)
     plt.gca().set_aspect("equal")
+    plt.legend(fontsize=16)
     plt.show()
 
     plt.figure()
@@ -117,7 +123,12 @@ def main():
     plt.show()
 
     plt.figure()
-    plt.plot(x[:, 5], label="Velocity")
+    plt.plot(x[:, 5] * np.cos(x[:, 4]), label="Lon Velocity")
+    plt.legend()
+    plt.show()
+
+    plt.figure()
+    plt.plot(x[:, 5] * np.sin(x[:, 4]), label="Lat Velocity")
     plt.legend()
     plt.show()
 
@@ -129,6 +140,16 @@ def main():
 
     plt.figure()
     plt.plot(t, label="Time")
+    plt.legend()
+    plt.show()
+
+    plt.figure()
+    plt.plot(x[:, 3], label="Angular Velocity")
+    plt.legend()
+    plt.show()
+
+    plt.figure()
+    plt.plot(x[:, 4], label="Slip Angle")
     plt.legend()
     plt.show()
 

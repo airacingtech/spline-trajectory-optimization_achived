@@ -11,7 +11,7 @@ import spline_traj_optm.utils.integrator as integrator
 
 
 def min_time_cost(T):
-    return ca.sum1(T)
+    return ca.sumsqr(T)
 
 
 def set_up_bicycle_problem(params):
@@ -124,7 +124,7 @@ def set_up_double_track_problem(params):
     for i in range(N):
         cost_function += ca.sumsqr(U[i, :]) * 1e-4
         cost_function += ca.sumsqr(U[i, :] - U[i-1, :]) * 1e-1
-    opti.minimize(cost_function)
+        # cost_function -= 10.0 * ca.sumsqr(X[i, 4] * ca.sin(X[i, 5])) # incentivize slip
 
     bank_list = []
     bank_intp_list = []
@@ -170,19 +170,7 @@ def set_up_double_track_problem(params):
             opti.set_initial(ui * scale_u, params["u0"][i-1, :])
             opti.set_initial(ti * scale_t, params["t0"][i-1, :])
 
-    
-    plt.figure()
-    plt.plot(np.ravel(bank_list), "-o", label="Bank Angle  List")
-    plt.legend()
-    plt.show()
-
-
-    # plt.figure()
-    # plt.plot(np.ravel(bank_intp_list), "-o", label="Bank Angle Intp List")
-    # plt.legend()
-    # plt.show()
-
-
+    opti.minimize(cost_function)
 
     print_lvl = 5 if params["verbose"] else 0
     p_opts = {"expand": True}
