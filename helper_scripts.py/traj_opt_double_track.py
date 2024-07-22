@@ -105,6 +105,8 @@ def main():
              opt_traj_d[:, Trajectory.RIGHT_BOUND_Y],  color="gray", linewidth=4.0)
     plt.gca().set_aspect("equal")
     plt.legend(fontsize=16)
+    # plt.xticks(np.arange(min(traj_d[:, 0]), max(traj_d[:, 0]) + 1, 20))
+    # plt.yticks(np.arange(min(traj_d[:, 1]), max(traj_d[:, 1]) + 1, 20))
     plt.show()
 
     plt.figure()

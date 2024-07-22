@@ -284,6 +284,7 @@ class BSplineTrajectory:
     def sample_along(self, interval: float = None, ts=None) -> Trajectory:
         if interval is not None:
             total_length = self.get_length()
+            print(total_length)
             num_sample = int(total_length // interval)
             interval = total_length / num_sample
             traj = Trajectory(num_sample)

@@ -20,6 +20,13 @@ class RaceTrack:
         assert left.shape[0] >= 3 and right.shape[0] >= 3
         assert left.shape[1] >= 2 and right.shape[1] >= 2
 
+        print("Shape of left:", left.shape)
+        print("Content of left[:, :2]:", left[:, :2])
+
+        print("Shape of right:", right.shape)
+        print("Content of left[:, :2]:", right[:, :2])
+     
+
         self.left_s = BSplineTrajectory(left[:, :2], s, 3, False)
         self.right_s = BSplineTrajectory(right[:, :2], s, 3,False )
         self.center_s = BSplineTrajectory(centerline[:, :3], s, 3, centerline.shape[1]==3)
