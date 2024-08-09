@@ -3,7 +3,7 @@ import os
 import re
 
 # Load the CSV file
-input_csv = 'kentucky_emlid.csv'
+input_csv = 'KY Pit Outer Edge.csv'
 data = pd.read_csv(input_csv)
 
 # Ensure the 'Code' column is treated as strings
@@ -22,16 +22,16 @@ data['Prefix'] = data['Name'].apply(extract_prefix)
 unique_prefixes = data['Prefix'].unique()
 
 # Process the data for each unique prefix and create separate CSV files
-for prefix in unique_prefixes:
+# for prefix in unique_prefixes:
     # Filter rows that match the prefix
-    filtered_data = data[data['Prefix'] == prefix]
+    # filtered_data = data[data['Prefix'] == prefix]
     
     # Select only Latitude, Longitude, and add a third column of zeros
-    output_data = filtered_data[['Latitude', 'Longitude']].copy()
-    output_data['Zero'] = 0
-    
-    # Create the output CSV file
-    output_csv = os.path.join(output_dir, f'{prefix}.csv')
-    output_data.to_csv(output_csv, index=False, header=False)
+output_data = data[['Latitude', 'Longitude']].copy()
+output_data['Zero'] = 0
+
+# Create the output CSV file
+output_csv = os.path.join(output_dir, f'{input_csv}')
+output_data.to_csv(output_csv, index=False, header=False)
 
 print('CSV files have been created in the output_csvs directory.')
