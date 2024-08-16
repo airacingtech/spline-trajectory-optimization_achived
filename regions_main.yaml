@@ -1,0 +1,4 @@
+pit_entrance_region:
+  name: pit_entrance_region
+  code: 9
+  file: /home/adith/spline-trajectory-optimization/KY_PIT_ENTRY_enu.csv

@@ -15,11 +15,11 @@ def filter_outliers(data, threshold):
     filtered_data.append(data[-1])
     return filtered_data
 
-input_file = 'KY Pit Road Inner Edge.csv'
-output_file = 'KY Pit Road Inner Edge_enu.csv'
-origin_lat = 38.71211726
-origin_lon = -84.91908613
-origin_alt = 194.5
+input_file = 'curve_multiagent_center.csv'
+output_file = 'curve_multiagent_center.csv'
+origin_lat = 38.71250474
+origin_lon = -84.91847019
+origin_alt = 0.0
 ignore_line = 1
 distance_threshold = 100.0  # Adjust the threshold value as needed
 

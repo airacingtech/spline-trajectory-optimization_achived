@@ -1,10 +1,10 @@
 verbose: True
 interval: 4.0
 # centerline: /home/haoru/art/ttl-ws/PUTNAM/traj_opt/optm_1_5/PUTNAM_OPTM_1_5.csv
-centerline: kentucky_centerline_manual_enu.csv
+centerline: centerline_kentucky_rad.csv
 # centerline: /home/haoru/art/ttl-ws/PUTNAM/enu/PUTNAM_A_CENTER_enu.csv
-left_boundary: kentucky_inside_enu_manual.csv
-right_boundary: kentucky_outside_enu_manual.csv
+left_boundary: KY_MAIN_INNER_enu.csv
+right_boundary: KY_MAIN_OUTER_enu.csv
 output: KS_A_OPTM_15_0.csv
 
 # centerline: MONZA_UNOPTIMIZED_LINE_enu.csv

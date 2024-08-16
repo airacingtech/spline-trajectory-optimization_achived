@@ -12,8 +12,11 @@ def main():
     ttl_in = argv[2]
     ttl_out = argv[3]
 
+
     with open(regions_yaml_path, "r") as f:
         polygon_dict = yaml.load(f, yaml.SafeLoader)
+        print('Loading polygons')
+
     for _, polygon in polygon_dict.items():
         assert type(polygon) is dict
         vertices = np.loadtxt(
@@ -29,3 +32,7 @@ def main():
     ttl = load_ttl(ttl_in)
     ttl.fill_region(regions)
     save_ttl(ttl_out, ttl)
+
+
+if __name__ == "__main__":
+    main()

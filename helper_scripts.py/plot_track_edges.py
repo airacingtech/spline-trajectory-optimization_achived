@@ -2,6 +2,8 @@ import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 from scipy.spatial.distance import cdist
+from scipy.interpolate import splprep, splev, interp1d
+
 
 # Load and parse the CSV file
 def load_csv_file(file_path):
@@ -19,12 +21,33 @@ def find_closest_points(inside, outside):
     return closest_points
 
 # Apply a low-pass filter to data
-def low_pass_filter(data, alpha=0.1):
-    filtered_data = np.zeros_like(data)
-    filtered_data[0] = data[0]  # Initialize the first value
-    for i in range(1, len(data)):
-        filtered_data[i] = alpha * data[i] + (1 - alpha) * filtered_data[i-1]
-    return filtered_data
+def low_pass_filter_with_sync(x_data, y_data, z_data, alpha=0.1):
+    filtered_x = []
+    filtered_y = []
+    filtered_z = []
+    
+    filtered_z.append(z_data[0])
+    filtered_x.append(x_data[0])
+    filtered_y.append(y_data[0])
+    
+    for i in range(1, len(z_data)):
+        new_z = alpha * z_data[i] + (1 - alpha) * filtered_z[-1]
+        if new_z != filtered_z[-1]:  # Only add the point if the Z value changes
+            filtered_z.append(new_z)
+            filtered_x.append(x_data[i])
+            filtered_y.append(y_data[i])
+    
+    return np.array(filtered_x), np.array(filtered_y), np.array(filtered_z)
+
+
+def interpolate_points(x, y, z, num_points=1000, method='linear'):
+    # Use linear or cubic spline interpolation
+
+    tck, _ = splprep([x, y, z], s=0)
+    u_new = np.linspace(0, 1, num_points)
+    new_x, new_y, new_z = splev(u_new, tck)
+    
+    return np.array(new_x), np.array(new_y), np.array(new_z)
 
 # Calculate the centerline coordinates
 def calculate_centerline(inside_x, inside_y, inside_z, outside_x, outside_y, outside_z, N):
@@ -50,11 +73,11 @@ def calculate_centerline(inside_x, inside_y, inside_z, outside_x, outside_y, out
     center_z = (outside_z_avg + closest_z_avg) / 2
     
     # Calculate bank angles using rolling averages
-    horizontal_distance = np.sqrt((outside_x_avg - closest_x_avg)**2 + (outside_y_avg - closest_y_avg)**2)
+    horizontal_distance =  np.sqrt((outside_x_avg - closest_x_avg)**2 + (outside_y_avg - closest_y_avg)**2)
     vertical_distance = outside_z_avg - closest_z_avg
     bank_angle = np.arctan2(vertical_distance, horizontal_distance)  # Bank angle in radians
     
-    return center_x, center_y, center_z, bank_angle
+    return center_x, center_y, center_z, bank_angle, closest_points_inside
 
 # Apply flooring and capping to the bank angle
 def floor_and_cap(data, min_value, max_value):
@@ -66,14 +89,23 @@ def write_centerline_to_csv(file_path, x, y, z, bank_angle):
     np.savetxt(file_path, centerline_data, delimiter=',', header='x,y,z,bank_angle', comments='', fmt='%.6f')
 
 # Plot the coordinates and centerline
-def plot_coordinates_with_centerline(inside_x, inside_y, outside_x, outside_y, center_x, center_y, point_size=2):
+def plot_coordinates_with_centerline(inside_x, inside_y, outside_x, outside_y, closest_points, center_x, center_y, point_size=2):
     plt.figure(figsize=(10, 6))
+    
+    # Plot the inside and outside edge coordinates
     plt.scatter(inside_x, inside_y, color='blue', label='Inside Edge Coordinates', s=point_size)
     plt.scatter(outside_x, outside_y, color='red', label='Outside Edge Coordinates', s=point_size)
+    
+    # Plot the centerline
     plt.plot(center_x, center_y, color='green', label='Centerline', linestyle='--')
+    
+    # Plot the connections between the closest points
+    for i in range(len(outside_x)):
+        plt.plot([outside_x[i], closest_points[i, 0]], [outside_y[i], closest_points[i, 1]], color='gray', linestyle='-', linewidth=0.5)
+    
     plt.xlabel('X Position')
     plt.ylabel('Y Position')
-    plt.title('X-Y Coordinates with Centerline')
+    plt.title('X-Y Coordinates with Centerline and Closest Point Connections')
     plt.legend()
     plt.grid(True)
     plt.show()
@@ -126,23 +158,22 @@ plot_z_heights(z_in, z_out)
 
 # Apply low-pass filter to the heights
 alpha = 0.08  # Smoothing factor for low-pass filter
-filtered_z_in = low_pass_filter(z_in, alpha)
-filtered_z_out = low_pass_filter(z_out, alpha)
+filtered_x_in, filtered_y_in, filtered_z_in = low_pass_filter_with_sync(x_in, y_in, z_in, alpha)
+filtered_x_out, filtered_y_out, filtered_z_out = low_pass_filter_with_sync(x_out, y_out, z_out, alpha)
 plot_z_heights(filtered_z_in, filtered_z_out)
 
 # Calculate the centerline coordinates with filtered heights
-center_x, center_y, center_z, bank_angle = calculate_centerline(x_in, y_in, filtered_z_in, x_out, y_out, filtered_z_out, N=3)
+center_x, center_y, center_z, bank_angle, closest_points = calculate_centerline(filtered_x_in, filtered_y_in, filtered_z_in, filtered_x_out, filtered_y_out, filtered_z_out, N=3)
 
 # Apply flooring and capping to the bank angle
-min_bank_angle = 0.0698132  # Example minimum value (in radians)
-max_bank_angle = 0.296706  # Example maximum value (in radians)
-capped_bank_angle = floor_and_cap(bank_angle, min_bank_angle, max_bank_angle)
+
+# capped_bank_angle = floor_and_cap(bank_angle, min_bank_angle, max_bank_angle)
 
 # Write the centerline coordinates to a CSV file
-write_centerline_to_csv(centerline_file_path, center_x, center_y, center_z, -capped_bank_angle)
+write_centerline_to_csv(centerline_file_path, center_x, center_y, center_z, -bank_angle)
 
 # Plot the original data and centerline
-plot_coordinates_with_centerline(x_in, y_in, x_out, y_out, center_x, center_y)
+plot_coordinates_with_centerline(x_in, y_in, x_out, y_out,closest_points, center_x, center_y)
 
 # Plot the bank angle at each (x, y) point
-plot_bank_angle_at_xy(center_x, center_y, capped_bank_angle)
+plot_bank_angle_at_xy(center_x, center_y, bank_angle)
