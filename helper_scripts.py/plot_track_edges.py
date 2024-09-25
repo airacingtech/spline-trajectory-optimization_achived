@@ -147,23 +147,23 @@ def plot_bank_angle_at_xy(center_x, center_y, bank_angle):
     plt.show()
 
 # File paths (replace with your actual file paths)
-in_file_path = 'KY_MAIN_INNER_enu.csv'
-out_file_path = 'KY_MAIN_OUTER_enu.csv'
-centerline_file_path = 'centerline_kentucky_bank_enu.csv'
+in_file_path = 'main_inside_edge_ring.csv'
+out_file_path = 'main_outside_wall_ring.csv'
+centerline_file_path = 'centerline_lvms_bank_enu.csv'
 
 # Load the data
 x_in, y_in, z_in = load_csv_file(in_file_path)
 x_out, y_out, z_out = load_csv_file(out_file_path)
 plot_z_heights(z_in, z_out)
 
-# Apply low-pass filter to the heights
-alpha = 0.08  # Smoothing factor for low-pass filter
-filtered_x_in, filtered_y_in, filtered_z_in = low_pass_filter_with_sync(x_in, y_in, z_in, alpha)
-filtered_x_out, filtered_y_out, filtered_z_out = low_pass_filter_with_sync(x_out, y_out, z_out, alpha)
-plot_z_heights(filtered_z_in, filtered_z_out)
+# # Apply low-pass filter to the heights
+# alpha = 0.08  # Smoothing factor for low-pass filter
+# filtered_x_in, filtered_y_in, filtered_z_in = low_pass_filter_with_sync(x_in, y_in, z_in, alpha)
+# filtered_x_out, filtered_y_out, filtered_z_out = low_pass_filter_with_sync(x_out, y_out, z_out, alpha)
+# plot_z_heights(filtered_z_in, filtered_z_out)
 
 # Calculate the centerline coordinates with filtered heights
-center_x, center_y, center_z, bank_angle, closest_points = calculate_centerline(filtered_x_in, filtered_y_in, filtered_z_in, filtered_x_out, filtered_y_out, filtered_z_out, N=3)
+center_x, center_y, center_z, bank_angle, closest_points = calculate_centerline(x_in, y_in, z_in, x_out, y_out, z_out, N=3)
 
 # Apply flooring and capping to the bank angle
 
