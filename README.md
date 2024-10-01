@@ -44,7 +44,6 @@ original file will be all boundary in one file, in gps coordinates
  it will not work
  what you need to do is - use the manual spline fitting tool:https://github.com/HaoruXue/offline-trajectory-tools
  
-or kunals autofit tool
 
 NOTE: bank angle is represented in centerline csv, if there is a bank angle centerline csv should be 4 columns (w bank as last column) otherwise should j be 3 columns as usual
 
