@@ -144,9 +144,14 @@ def set_up_double_track_problem(params):
 
         # boundary constraint in frenet frame
         opti.subject_to(xi[0] == X_OFFSET[i-1, 0])
-        dl = (BoundL[i-1])/np.cos(bank)
+        # dl = (BoundL[i-1])/np.cos(bank)
 
-        dr = -(((np.abs((BoundR[i-1])) + np.abs(BoundL[i-1]))/(np.cos(bank))) - (dl))
+        # dr = -(((np.abs((BoundR[i-1])) + np.abs(BoundL[i-1]))/(np.cos(bank))) - (dl))
+        
+        dr = BoundR[i-1]
+
+        dl = BoundL[i-1]
+
         print(BoundL[i-1])
         print(BoundR[i-1])
         print(dl)
