@@ -22,7 +22,7 @@ def load_and_plot_paths(csv_files):
     plt.show()
 
 # List of CSV files to load
-csv_files = ['LVMS_MAIN_INNER_BOUND_enu(1).csv', 'LVMS_MAIN_OUTTER_BOUND_enu(1).csv', 'tum_lvms_shifted.csv']
+csv_files = ['LVMS_MAIN_OUTTER_2024_enu(2).csv', 'LVMS_MAIN_INNER_2024_enu(2).csv', 'tum_lvms_shifted_2.csv']
 
 # Call the function
 load_and_plot_paths(csv_files)

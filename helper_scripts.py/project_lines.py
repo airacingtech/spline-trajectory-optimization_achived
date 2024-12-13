@@ -64,4 +64,4 @@ def project_csv_onto_path(file1: str, file2: str, output_file: str):
     plt.show()
 
 # Usage example
-project_csv_onto_path("centerline_lvms_bank_enu.csv", "tum_lvms_corrected.csv", "tum_lvms_projected.csv")
+project_csv_onto_path("tum_lvms_shifted_lvms_initial_guess.csv", "tum_lvms_corrected.csv", "tum_lvms_projected.csv")

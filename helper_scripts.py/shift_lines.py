@@ -48,4 +48,4 @@ def shift_csv_by_difference(file1: str, file2: str, output_file: str):
     plt.show()
 
 # Usage example
-shift_csv_by_difference("centerline_lvms_bank_enu.csv", "tum_lvms_corrected.csv", "tum_lvms_shifted.csv")
+shift_csv_by_difference("centerline_lvms_no_bank_svl_enu_smoothed.csv", "tum_lvms_corrected.csv", "tum_lvms_shifted_lvms_initial_guess.csv")

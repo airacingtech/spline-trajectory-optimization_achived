@@ -147,9 +147,9 @@ def plot_bank_angle_at_xy(center_x, center_y, bank_angle):
     plt.show()
 
 # File paths (replace with your actual file paths)
-in_file_path = 'LVMS_MAIN_INNER_BOUND_enu(1).csv'
-out_file_path = 'LVMS_MAIN_OUTTER_BOUND_enu(1).csv'
-centerline_file_path = 'centerline_lvms_bank_enu.csv'
+out_file_path = 'LVMS_MAIN_OUTTER_2024_enu(2).csv'
+in_file_path = 'LVMS_MAIN_INNER_2024_enu(2).csv'
+centerline_file_path = 'centerline_lvms_no_bank_svl_enu_smoothed.csv'
 
 # Load the data
 x_in, y_in, z_in = load_csv_file(in_file_path)
