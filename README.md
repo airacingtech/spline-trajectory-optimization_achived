@@ -1,3 +1,6 @@
+# This repo is no longer maintained
+Please use the newest version at: [Spline Trajectory Optimization](https://github.com/airacingtech/spline-trajectory-optimization)
+
 # spline-trajectory-optimization
 
 Spline-based Trajectory Optimization tool for Autonomous Racing (Indy Autonomous Challenge)
